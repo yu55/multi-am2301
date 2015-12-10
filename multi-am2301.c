@@ -288,7 +288,7 @@ static int __init multiple_am2301_init(void)
 {
 	int i;
 
-	printk(KERN_INFO "Init multi_am2301\n");
+	printk(KERN_INFO "Init multi-am2301\n");
 
 	init_waitqueue_head(&_queue);
 
@@ -298,13 +298,13 @@ static int __init multiple_am2301_init(void)
 		ret = gpio_request_one(_pins[i], GPIOF_OUT_INIT_HIGH, "AM2301");
 
 		if (ret != 0) {
-			printk(KERN_ERR "multi_am2301: Unable to request GPIO%d, err: %d\n", _pins[i], ret);
+			printk(KERN_ERR "multi-am2301: Unable to request GPIO%d, err: %d\n", _pins[i], ret);
 			return ret;
 		}
 
 		_irqs[i] =  gpio_to_irq(_pins[i]);
 		if (_irqs[i] < 0) {
-			printk(KERN_ERR "multi_am2301: Unable to create IRQ for GPIO%d\n", _pins[i]);
+			printk(KERN_ERR "multi-am2301: Unable to create IRQ for GPIO%d\n", _pins[i]);
 			goto _cleanup_1;
 
 		}
@@ -314,16 +314,16 @@ static int __init multiple_am2301_init(void)
 				  "read_isr", NULL);
 	}
 
-	ts = kthread_create(read_thread, NULL, "multi_am2301");
+	ts = kthread_create(read_thread, NULL, "multi-am2301");
 
 	if (ts) {
 		wake_up_process(ts);
 	} else {
-		printk(KERN_ERR "multi_am2301: Unable to create thread\n");
+		printk(KERN_ERR "multi-am2301: Unable to create thread\n");
 		goto _cleanup_2;
 	}
 
-	proc_create("multi_am2301", 0, NULL, &proc_fs_fops);
+	proc_create("multi-am2301", 0, NULL, &proc_fs_fops);
 
 	return 0;
 
@@ -360,8 +360,8 @@ static void __exit multiple_am2301_exit(void)
 		gpio_free(_pins[i]);
 	}
 
-	remove_proc_entry("multi_am2301", NULL);
-	printk(KERN_INFO "multi_am2301: exit\n");
+	remove_proc_entry("multi-am2301", NULL);
+	printk(KERN_INFO "multi-am2301: exit\n");
 }
 
 module_init(multiple_am2301_init);
