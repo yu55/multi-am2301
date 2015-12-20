@@ -54,4 +54,5 @@ REVISION
 *.order
 *.ko
 .tmp_versions
+*.mod.c
 
