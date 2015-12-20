@@ -1,4 +1,4 @@
-MOD=multi_am2301
+MOD=multi-am2301
 
 obj-m := $(MOD).o
 
