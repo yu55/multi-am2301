@@ -3,6 +3,8 @@ This repository contains Linux kernel module reading temperature and relative hu
 
 This kernel module is an evolution of a module presented on [Blackwire Embedded blog](http://www.blackwire.ro/index.php/site-map/articles/79-embedded/raspberrypy/76-am2301-dht21-temperature-rh-sensor-with-raspberry-pi-kernel-module). Compilation issues against `proc_fs` were fixed and multiple sensors support added. It works stable with kernel: `Linux raspberrypi 3.12.22+ #691 PREEMPT Wed Jun 18 18:29:58 BST 2014 armv6l GNU/Linux`. It should work with other kernel versions as well unless some major API changes were done in the kernel.
 
+![multi-am2301](/../screenshots/multi-am2301.png?raw=true "View of data from AM2301 sensors connected to Raspberry Pi")
+
 Latest measurement data from connected sensors is available under `/proc/multi-am2301` and can be displayed anytime using e.g. following command: `cat /proc/multi-am2301`. For each connected sensor it contains parameters like:
 * `temperature` - temperature value in Celsius degrees
 * `RH` - percentage of relative humidity
