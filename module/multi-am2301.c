@@ -370,5 +370,5 @@ module_exit(multiple_am2301_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Constantin Petra");
 MODULE_AUTHOR("Marcin Pilaczynski");
-MODULE_DESCRIPTION("multiple AM2301 driver");
+MODULE_DESCRIPTION("multi AM2301 driver");
 
