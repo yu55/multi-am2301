@@ -1,7 +1,7 @@
 # multi-am2301
 This repository contains Linux kernel module reading temperature and relative humidity data from multiple AM2301 (DHT21) sensors simultaneously connected to Raspberry Pi via GPIO pins.
 
-This kernel module is an evolution of a module presented on [Blackwire Embedded blog](http://www.blackwire.ro/index.php/site-map/articles/79-embedded/raspberrypy/76-am2301-dht21-temperature-rh-sensor-with-raspberry-pi-kernel-module). Compilation issues against `proc_fs` were fixed and multiple sensors support added. It works stable with kernels: `Linux raspberrypi 3.12.22+ #691 PREEMPT Wed Jun 18 18:29:58 BST 2014 armv6l GNU/Linux`, `Linux raspberrypi 4.1.19+ #858 Tue Mar 15 15:52:03 GMT 2016 armv6l GNU/Linux`. It should work with other kernel versions as well unless some major API changes were done in the kernel.
+This kernel module is an evolution of a module presented on [Blackwire Embedded blog](http://www.blackwire.ro/index.php/site-map/articles/79-embedded/raspberrypy/76-am2301-dht21-temperature-rh-sensor-with-raspberry-pi-kernel-module). Compilation issues against `proc_fs` were fixed and multiple sensors support added. It works stable with kernels: `Linux raspberrypi 3.12.22+ #691 PREEMPT Wed Jun 18 18:29:58 BST 2014 armv6l GNU/Linux`, `Linux raspberrypi 4.1.19+ #858 Tue Mar 15 15:52:03 GMT 2016 armv6l GNU/Linux`, `Linux raspberrypi 4.4.26+ #915 Thu Oct 20 17:02:14 BST 2016 armv6l GNU/Linux`. It should work with other kernel versions as well unless some major API changes were done in the kernel.
 
 ![multi-am2301](/../screenshots/multi-am2301.png?raw=true "View of data from AM2301 sensors connected to Raspberry Pi")
 

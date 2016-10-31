@@ -28,7 +28,7 @@ struct st_inf {
 #define SHORT_DELAY 1
 #define DEFAULT_DELAY 2
 
-static int _pins[] = {23, 24, 25, 8};
+static int _pins[] = {23, 24, 25, 8, 7};
 static int _irqs[ARRAY_SIZE(_pins)];
 static int _reads_ok[ARRAY_SIZE(_pins)];
 static int _reads_total[ARRAY_SIZE(_pins)];

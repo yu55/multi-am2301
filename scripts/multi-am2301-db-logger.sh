@@ -122,3 +122,33 @@ DATETIME=`date --date @${TIMESTAMP} +'%Y-%m-%d %H:%M:%S'`;
 sqlite3 /var/local/am2301-db.sl3 "INSERT INTO pin8 VALUES('$DATETIME', '$T', '$RH');"
 
 
+LINE=`grep 7_temperature /proc/multi-am2301`;
+if [ $? -ne 0 ]; then
+    echo "Problem with grep Temperature";
+    exit $?;
+fi
+COLS=( $LINE );
+T=${COLS[2]};
+
+LINE=`grep 7_RH /proc/multi-am2301`;
+if [ $? -ne 0 ]; then
+    echo "Problem with grep RH";
+    exit $?;
+fi
+
+COLS=( $LINE );
+RH=${COLS[2]};
+
+LINE=`grep 7_timestamp /proc/multi-am2301`;
+if [ $? -ne 0 ]; then
+    echo "Problem with grep Timestamp";
+    exit $?;
+fi
+COLS=( $LINE );
+TIMESTAMP=${COLS[2]};
+
+DATETIME=`date --date @${TIMESTAMP} +'%Y-%m-%d %H:%M:%S'`;
+
+sqlite3 /var/local/am2301-db.sl3 "INSERT INTO pin7 VALUES('$DATETIME', '$T', '$RH');"
+
+
