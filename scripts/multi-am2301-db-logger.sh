@@ -152,3 +152,8 @@ DATETIME=`date --date @${TIMESTAMP} +'%Y-%m-%d %H:%M:%S'`;
 sqlite3 /var/local/am2301-db.sl3 "INSERT INTO pin7 VALUES('$DATETIME', '$T', '$RH');"
 
 
+for file in  /var/www/html/*.plt
+do
+  gnuplot "$file"
+done
+
