@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function log_sensor_data {
+
     LINE=`grep $1_temperature /proc/multi-am2301`;
     if [ $? -ne 0 ]; then
         echo "Problem with grep $1_temperature";
@@ -31,8 +32,11 @@ function log_sensor_data {
     sqlite3 /var/local/am2301-db.sl3 "INSERT INTO $2 VALUES('$DATETIME', '$T', '$RH');";
 }
 
-log_sensor_data 23 pin23
-log_sensor_data 24 root_cellar
-log_sensor_data 25 pin25
-log_sensor_data 8 pin8
-log_sensor_data 7 pin7
+
+pins=(         23          24    25    8    7 )
+db_tables=( pin23 root_cellar pin25 pin8 pin7 )
+
+for a in {0..4}
+do
+  log_sensor_data ${pins[$a]} ${db_tables[$a]}
+done 
