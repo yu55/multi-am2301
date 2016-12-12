@@ -33,8 +33,8 @@ function log_sensor_data {
 }
 
 
-pins=(         23          24    25    8    7 )
-db_tables=( pin23 root_cellar pin25 pin8 pin7 )
+     pins=(    23            24      25      8      7 )
+db_tables=( pin23   root_cellar   pin25   pin8   pin7 )
 
 for a in {0..4}
 do
