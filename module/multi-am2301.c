@@ -264,7 +264,7 @@ static int read_thread(void *data)
                         {
 				if ((s.t - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].t > 50) ||  /* 5 degrees difference */
 				    (s.t - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].t < -50) ||
-				    (s.rh - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].rh > 100) || /* or 10 RH differene */
+				    (s.rh - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].rh > 100) || /* or 10 RH difference */
 				    (s.rh - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].rh < -100))
 				{
 					/* Ignore this reading */
