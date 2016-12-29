@@ -7,9 +7,9 @@
 #include <linux/semaphore.h>
 #include <linux/ktime.h>
 #include <linux/proc_fs.h>
-
 #include <linux/seq_file.h>
 #include <linux/time.h>
+#include "stats.h"
 
 enum eState {
 	READ_START,
@@ -219,6 +219,7 @@ static int read_thread(void *data)
 	struct st_inf s;
 	static int pin_selector_counter = 0;
 	struct timeval time;
+        MEASUREMENT m;
 
         while (!kthread_should_stop()) {
 
@@ -277,6 +278,10 @@ static int read_thread(void *data)
 					_reads_ok[pin_selector_counter % ARRAY_SIZE(_pins)]++;
 					do_gettimeofday(&time);
 					_timestamps[pin_selector_counter % ARRAY_SIZE(_pins)] = time.tv_sec;
+
+                                        m.temp = s.t;
+                                        m.timestamp = time.tv_sec;
+                                        stats_update(m);
 				}
 			}
 		}
@@ -289,6 +294,8 @@ static int __init multiple_am2301_init(void)
 	int i;
 
 	printk(KERN_INFO "Init multi-am2301\n");
+
+        stats_init();
 
 	init_waitqueue_head(&_queue);
 
