@@ -279,9 +279,11 @@ static int read_thread(void *data)
 					do_gettimeofday(&time);
 					_timestamps[pin_selector_counter % ARRAY_SIZE(_pins)] = time.tv_sec;
 
-                                        m.temp = s.t;
-                                        m.timestamp = time.tv_sec;
-                                        stats_update(m);
+                                        if (pin_selector_counter % ARRAY_SIZE(_pins) == 4) {
+                                            m.temp = s.t;
+                                            m.timestamp = time.tv_sec;
+                                            stats_update(m);
+                                        }
 				}
 			}
 		}

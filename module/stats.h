@@ -10,5 +10,6 @@ typedef struct MEASUREMENT {
 
 void stats_init(void);
 void stats_update(MEASUREMENT measurement);
+int stats_1m(void);
 
 #endif 
