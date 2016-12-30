@@ -286,11 +286,10 @@ static int read_thread(void *data)
 					do_gettimeofday(&time);
 					_timestamps[pin_selector_counter % ARRAY_SIZE(_pins)] = time.tv_sec;
 
-                                        if (pin_selector_counter % ARRAY_SIZE(_pins) == 4) {
-                                            m.temp = s.t;
-                                            m.timestamp = time.tv_sec;
-                                            stats_update(m);
-                                        }
+                                        m.pin_index = pin_selector_counter % ARRAY_SIZE(_pins);
+                                        m.temp = s.t;
+                                        m.timestamp = time.tv_sec;
+                                        stats_update(m);
 				}
 			}
 		}
@@ -304,7 +303,7 @@ static int __init multiple_am2301_init(void)
 
 	printk(KERN_INFO "Init multi-am2301\n");
 
-        stats_init();
+        stats_init(_temps_1m, ARRAY_SIZE(_pins));
 
 	init_waitqueue_head(&_queue);
 
