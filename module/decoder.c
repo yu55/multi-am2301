@@ -34,6 +34,7 @@ static int _reads_ok[ARRAY_SIZE(_pins)];
 static int _reads_total[ARRAY_SIZE(_pins)];
 static struct st_inf _sp[ARRAY_SIZE(_pins)];
 static struct st_inf _sns[ARRAY_SIZE(_pins)];
+static int _temps_1m[ARRAY_SIZE(_pins)];
 static time_t _timestamps[ARRAY_SIZE(_pins)];
 
 static int _pin = -1;
@@ -53,11 +54,17 @@ static int proc_fs_show(struct seq_file *m, void *v) {
 	for (i=0; i<ARRAY_SIZE(_pins); i++)
 	{
 		if (_sns[i].t < 0) {
-            seq_printf(m, "%d_temperature :\t\t-%d.%d C\n", _pins[i], (int) abs(_sns[i].t / 10), (int) abs(_sns[i].t % 10) );
-        } else {
-            seq_printf(m, "%d_temperature :\t\t%d.%d C\n", _pins[i], _sns[i].t / 10, _sns[i].t % 10 );
-        }
+                    seq_printf(m, "%d_temperature :\t\t-%d.%d C\n", _pins[i], (int) abs(_sns[i].t / 10), (int) abs(_sns[i].t % 10) );
+                } else {
+                    seq_printf(m, "%d_temperature :\t\t%d.%d C\n", _pins[i], _sns[i].t / 10, _sns[i].t % 10 );
+                }
+		if (_temps_1m[i] < 0) {
+                    seq_printf(m, "%d_temp_1m     :\t\t-%d.%d C\n", _pins[i], (int) abs(_temps_1m[i] / 10), (int) abs(_temps_1m[i] % 10) );
+                } else {
+                    seq_printf(m, "%d_temp_1m     :\t\t%d.%d C\n", _pins[i], _temps_1m[i] / 10, _temps_1m[i] % 10 );
+                }
 		seq_printf(m, "%d_RH          :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh%10);
+
 
 		local_time = (u32)(_timestamps[i] - (sys_tz.tz_minuteswest * 60));
 		time_to_tm(local_time, 0, &s_tm);
