@@ -11,6 +11,5 @@ typedef struct MEASUREMENT {
 
 void stats_init(int temp_1m[], unsigned short int temp_1m_size);
 void stats_update(MEASUREMENT measurement);
-int stats_1m(void);
 
 #endif 

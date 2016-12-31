@@ -71,7 +71,3 @@ void calculate_stats_1m() {
     }
 }
 
-int stats_1m() {
-   return 321;
-}
-
