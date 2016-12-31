@@ -3,7 +3,7 @@
 #include <linux/kernel.h>
 #include <linux/ktime.h>
 
-#define FIFO_SIZE 64
+#define FIFO_SIZE 128
 static DECLARE_KFIFO(fifo_1m, MEASUREMENT, FIFO_SIZE);
 
 void evict_outdated_in_fifo_1m(time_t);

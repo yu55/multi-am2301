@@ -5,7 +5,7 @@
 
 typedef struct MEASUREMENT {
     unsigned short int pin_index;
-    int temp;
+    short int temp;
     time_t timestamp;
 } MEASUREMENT;
 
