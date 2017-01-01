@@ -35,6 +35,7 @@ static int _reads_total[ARRAY_SIZE(_pins)];
 static struct st_inf _sp[ARRAY_SIZE(_pins)];
 static struct st_inf _sns[ARRAY_SIZE(_pins)];
 static int _temps_1m[ARRAY_SIZE(_pins)];
+static int _rh_1m[ARRAY_SIZE(_pins)];
 static time_t _timestamps[ARRAY_SIZE(_pins)];
 
 static int _pin = -1;
@@ -63,8 +64,8 @@ static int proc_fs_show(struct seq_file *m, void *v) {
                 } else {
                     seq_printf(m, "%d_temp_1m     :\t\t%d.%d C\n", _pins[i], _temps_1m[i] / 10, _temps_1m[i] % 10 );
                 }
-		seq_printf(m, "%d_RH          :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh%10);
-
+		seq_printf(m, "%d_RH          :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh % 10);
+                seq_printf(m, "%d_RH_1m       :\t\t%d.%d %%\n", _pins[i], _rh_1m[i] / 10, _rh_1m[i] % 10);
 
 		local_time = (u32)(_timestamps[i] - (sys_tz.tz_minuteswest * 60));
 		time_to_tm(local_time, 0, &s_tm);
@@ -288,6 +289,7 @@ static int read_thread(void *data)
 
                                         m.pin_index = pin_selector_counter % ARRAY_SIZE(_pins);
                                         m.temp = s.t;
+                                        m.rh = s.rh;
                                         m.timestamp = time.tv_sec;
                                         stats_update(m);
 				}
@@ -303,7 +305,7 @@ static int __init multiple_am2301_init(void)
 
 	printk(KERN_INFO "Init multi-am2301\n");
 
-        stats_init(_temps_1m, ARRAY_SIZE(_pins));
+        stats_init(_temps_1m, _rh_1m, ARRAY_SIZE(_pins));
 
 	init_waitqueue_head(&_queue);
 
