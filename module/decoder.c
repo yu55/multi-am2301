@@ -64,7 +64,7 @@ static int proc_fs_show(struct seq_file *m, void *v) {
                 } else {
                     seq_printf(m, "%d_temp_1m     :\t\t%d.%d C\n", _pins[i], _temps_1m[i] / 10, _temps_1m[i] % 10 );
                 }
-		seq_printf(m, "%d_RH          :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh % 10);
+                seq_printf(m, "%d_RH          :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh % 10);
                 seq_printf(m, "%d_RH_1m       :\t\t%d.%d %%\n", _pins[i], _rh_1m[i] / 10, _rh_1m[i] % 10);
 
 		local_time = (u32)(_timestamps[i] - (sys_tz.tz_minuteswest * 60));
