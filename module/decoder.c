@@ -226,6 +226,7 @@ static int read_thread(void *data)
 	int local_delay = 0;
 	struct st_inf s;
 	static int pin_selector_counter = 0;
+        int selected_pin_index = 0;
 	struct timeval time;
         MEASUREMENT m;
 
@@ -243,12 +244,13 @@ static int read_thread(void *data)
 		}
 
 		pin_selector_counter++;
+                selected_pin_index = pin_selector_counter % ARRAY_SIZE(_pins);
 
-		_pin = _pins[pin_selector_counter % ARRAY_SIZE(_pins)];
+		_pin = _pins[selected_pin_index];
 
 		local_delay = _read_delay;
 
-		_reads_total[pin_selector_counter % ARRAY_SIZE(_pins)]++;
+		_reads_total[selected_pin_index]++;
 
 		if (start_read() != 0)
                 {
@@ -262,32 +264,32 @@ static int read_thread(void *data)
 		}
 		else
                 {
-			if (_reads_ok[pin_selector_counter % ARRAY_SIZE(_pins)] == 0)
+			if (_reads_ok[selected_pin_index] == 0)
 			{
 				local_delay = SHORT_DELAY;
-				_sns[pin_selector_counter % ARRAY_SIZE(_pins)] = s;
-				_sp[pin_selector_counter % ARRAY_SIZE(_pins)] = s;
-				_reads_ok[pin_selector_counter % ARRAY_SIZE(_pins)]++ ;
+				_sns[selected_pin_index] = s;
+				_sp[selected_pin_index] = s;
+				_reads_ok[selected_pin_index]++ ;
 			}
 			else
                         {
-				if ((s.t - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].t > 50) ||  /* 5 degrees difference */
-				    (s.t - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].t < -50) ||
-				    (s.rh - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].rh > 100) || /* or 10 RH difference */
-				    (s.rh - _sp[pin_selector_counter % ARRAY_SIZE(_pins)].rh < -100))
+				if ((s.t - _sp[selected_pin_index].t > 50) ||  /* 5 degrees difference */
+				    (s.t - _sp[selected_pin_index].t < -50) ||
+				    (s.rh - _sp[selected_pin_index].rh > 100) || /* or 10 RH difference */
+				    (s.rh - _sp[selected_pin_index].rh < -100))
 				{
 					/* Ignore this reading */
 					local_delay = SHORT_DELAY;
 				}
                                 else
 				{
-					_sns[pin_selector_counter % ARRAY_SIZE(_pins)] = s;
-					_sp[pin_selector_counter % ARRAY_SIZE(_pins)] = s;
-					_reads_ok[pin_selector_counter % ARRAY_SIZE(_pins)]++;
+					_sns[selected_pin_index] = s;
+					_sp[selected_pin_index] = s;
+					_reads_ok[selected_pin_index]++;
 					do_gettimeofday(&time);
-					_timestamps[pin_selector_counter % ARRAY_SIZE(_pins)] = time.tv_sec;
+					_timestamps[selected_pin_index] = time.tv_sec;
 
-                                        m.pin_index = pin_selector_counter % ARRAY_SIZE(_pins);
+                                        m.pin_index = selected_pin_index;
                                         m.temp = s.t;
                                         m.rh = s.rh;
                                         m.timestamp = time.tv_sec;
