@@ -34,13 +34,16 @@ void evict_outdated_in_fifo_1m(time_t current_time) {
     m.temp = -1;
     m.timestamp = -1;
 
+    printk(KERN_INFO "queue len: %u\n", kfifo_len(&fifo_1m));
+
     while(continue_eviction) {
         continue_eviction = false;
         if (kfifo_peek(&fifo_1m, &m)) {
             if (current_time - m.timestamp > 60) {
-                if (kfifo_get(&fifo_1m, &m)) {
-                    continue_eviction = true;
-                }
+                kfifo_skip(&fifo_1m);
+                continue_eviction = true;
+
+                printk(KERN_INFO "skipped: %d,%d,%ld\n", m.pin_index, m.temp, m.timestamp);
             }
         }
     }
@@ -68,6 +71,8 @@ void calculate_stats_1m() {
         for (i = 0; i < pins_count; i++) {
             temps_1m[i] = (counts[i] == 0) ? 0 : temp_acc[i]/counts[i];
             rhs_1m[i] = (counts[i] == 0) ? 0 : rh_acc[i]/counts[i];
+
+            printk(KERN_INFO "t_1m=%d (%d/%d) rh_1m=%d (%d/%d)\n", temps_1m[i], temp_acc[i], counts[i], rhs_1m[i], rh_acc[i], counts[i]);
         }
     }
 }
