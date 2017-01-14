@@ -27,9 +27,9 @@ function log_sensor_data {
     COLS=( $LINE );
     T=${COLS[2]};
 
-    LINE=`grep $1_RH /proc/multi-am2301`;
+    LINE=`grep $1_RH_1m /proc/multi-am2301`;
     if [ $? -ne 0 ]; then
-        echo "Problem with grep $1_RH";
+        echo "Problem with grep $1_RH_1m";
         exit $?;
     fi
 

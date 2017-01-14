@@ -55,23 +55,23 @@ static int proc_fs_show(struct seq_file *m, void *v) {
 	for (i=0; i<ARRAY_SIZE(_pins); i++)
 	{
 		if (_sns[i].t < 0) {
-                    seq_printf(m, "%d_temperature :\t\t-%d.%d C\n", _pins[i], (int) abs(_sns[i].t / 10), (int) abs(_sns[i].t % 10) );
+                    seq_printf(m, "%d_temp_curr  :\t\t-%d.%d C\n", _pins[i], (int) abs(_sns[i].t / 10), (int) abs(_sns[i].t % 10) );
                 } else {
-                    seq_printf(m, "%d_temperature :\t\t%d.%d C\n", _pins[i], _sns[i].t / 10, _sns[i].t % 10 );
+                    seq_printf(m, "%d_temp_curr  :\t\t%d.%d C\n", _pins[i], _sns[i].t / 10, _sns[i].t % 10 );
                 }
 		if (_temps_1m[i] < 0) {
-                    seq_printf(m, "%d_temp_1m     :\t\t-%d.%d C\n", _pins[i], (int) abs(_temps_1m[i] / 10), (int) abs(_temps_1m[i] % 10) );
+                    seq_printf(m, "%d_temp_1m    :\t\t-%d.%d C\n", _pins[i], (int) abs(_temps_1m[i] / 10), (int) abs(_temps_1m[i] % 10) );
                 } else {
-                    seq_printf(m, "%d_temp_1m     :\t\t%d.%d C\n", _pins[i], _temps_1m[i] / 10, _temps_1m[i] % 10 );
+                    seq_printf(m, "%d_temp_1m    :\t\t%d.%d C\n", _pins[i], _temps_1m[i] / 10, _temps_1m[i] % 10 );
                 }
-                seq_printf(m, "%d_RH          :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh % 10);
-                seq_printf(m, "%d_RH_1m       :\t\t%d.%d %%\n", _pins[i], _rh_1m[i] / 10, _rh_1m[i] % 10);
+                seq_printf(m, "%d_RH_curr    :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh % 10);
+                seq_printf(m, "%d_RH_1m      :\t\t%d.%d %%\n", _pins[i], _rh_1m[i] / 10, _rh_1m[i] % 10);
 
 		local_time = (u32)(_timestamps[i] - (sys_tz.tz_minuteswest * 60));
 		time_to_tm(local_time, 0, &s_tm);
-		seq_printf(m, "%d_date        :\t\t%04ld-%02d-%02d %02d:%02d:%02d\n", _pins[i], s_tm.tm_year + 1900, s_tm.tm_mon + 1, s_tm.tm_mday, (s_tm.tm_hour + 2), s_tm.tm_min, s_tm.tm_sec);
-		seq_printf(m, "%d_timestamp   :\t\t%ld\n", _pins[i], _timestamps[i]);
-		seq_printf(m, "%d_QUAL        :\t\t%d/%d %d%c\n", _pins[i], _reads_ok[i], _reads_total[i], _reads_ok[i] * 100 / _reads_total[i], '\%');
+		seq_printf(m, "%d_date       :\t\t%04ld-%02d-%02d %02d:%02d:%02d\n", _pins[i], s_tm.tm_year + 1900, s_tm.tm_mon + 1, s_tm.tm_mday, (s_tm.tm_hour + 2), s_tm.tm_min, s_tm.tm_sec);
+		seq_printf(m, "%d_timestamp  :\t\t%ld\n", _pins[i], _timestamps[i]);
+		seq_printf(m, "%d_QUAL       :\t\t%d/%d %d%c\n", _pins[i], _reads_ok[i], _reads_total[i], _reads_ok[i] * 100 / _reads_total[i], '\%');
 
 		seq_printf(m, "\n");
 	}
