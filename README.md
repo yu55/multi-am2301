@@ -6,8 +6,10 @@ This kernel module is an evolution of a module presented on [Blackwire Embedded 
 ![multi-am2301](/../screenshots/multi-am2301.png?raw=true "View of data from AM2301 sensors connected to Raspberry Pi")
 
 Latest measurement data from connected sensors is available under `/proc/multi-am2301` and can be displayed anytime using e.g. following command: `cat /proc/multi-am2301`. For each connected sensor it contains parameters like:
-* `temperature` - temperature value in Celsius degrees
-* `RH` - percentage of relative humidity
+* `temp_curr` - value of last temperature measurement in Celsius degrees
+* `temp_1m` - average value of temperature for last 1 minute
+* `RH_curr` - value of last relative humidity measurement
+* `RH_1m` - average value of relative humidity for last 1 minute
 * `date` - formatted measurement date and time
 * `timestamp` - measurement timestamp (millis from Epoch)
 * `QUAL` - how many sensor read attempts were there and how many of them were successfull. Note: idling Raspberry Pi has `QUAL` more than 90% for each correctly connected sensor, however when CPU is fully loaded or lots of interrputs occure (e.g. when reading lots of data from serial communication etc.) `QUAL` will drop down.
