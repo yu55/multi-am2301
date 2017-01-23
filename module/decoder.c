@@ -28,7 +28,8 @@ struct st_inf {
 #define SHORT_DELAY 1
 #define DEFAULT_DELAY 2
 
-static int _pins[] = {23, 24, 25, 8, 7};
+static int _pins[] = { 23, 24, 25, 8, 7 };
+
 static int _irqs[ARRAY_SIZE(_pins)];
 static int _reads_ok[ARRAY_SIZE(_pins)];
 static int _reads_total[ARRAY_SIZE(_pins)];
@@ -39,7 +40,7 @@ static int _rh_1m[ARRAY_SIZE(_pins)];
 static time_t _timestamps[ARRAY_SIZE(_pins)];
 
 static int _pin = -1;
-static int _read_delay = DEFAULT_DELAY; /* in seconds */
+static int _read_delay = DEFAULT_DELAY;	/* in seconds */
 static volatile int _read_req = READ_STOP;
 static struct task_struct *ts = NULL;
 static wait_queue_head_t _queue;
@@ -47,48 +48,65 @@ static ktime_t _old;
 static volatile int _ulen;
 static unsigned char _data[5];
 
-static int proc_fs_show(struct seq_file *m, void *v) {
+static int proc_fs_show(struct seq_file *m, void *v)
+{
 	long local_time;
 	struct tm s_tm;
 	int i;
 
-	for (i=0; i<ARRAY_SIZE(_pins); i++)
-	{
+	for (i = 0; i < ARRAY_SIZE(_pins); i++) {
 		if (_sns[i].t < 0) {
-                    seq_printf(m, "%d_temp_curr  :\t\t-%d.%d C\n", _pins[i], (int) abs(_sns[i].t / 10), (int) abs(_sns[i].t % 10) );
-                } else {
-                    seq_printf(m, "%d_temp_curr  :\t\t%d.%d C\n", _pins[i], _sns[i].t / 10, _sns[i].t % 10 );
-                }
+			seq_printf(m, "%d_temp_curr  :\t\t-%d.%d C\n", _pins[i],
+				   (int)abs(_sns[i].t / 10),
+				   (int)abs(_sns[i].t % 10));
+		} else {
+			seq_printf(m, "%d_temp_curr  :\t\t%d.%d C\n", _pins[i],
+				   _sns[i].t / 10, _sns[i].t % 10);
+		}
 		if (_temps_1m[i] < 0) {
-                    seq_printf(m, "%d_temp_1m    :\t\t-%d.%d C\n", _pins[i], (int) abs(_temps_1m[i] / 10), (int) abs(_temps_1m[i] % 10) );
-                } else {
-                    seq_printf(m, "%d_temp_1m    :\t\t%d.%d C\n", _pins[i], _temps_1m[i] / 10, _temps_1m[i] % 10 );
-                }
-                seq_printf(m, "%d_RH_curr    :\t\t%d.%d %%\n", _pins[i], _sns[i].rh / 10, _sns[i].rh % 10);
-                seq_printf(m, "%d_RH_1m      :\t\t%d.%d %%\n", _pins[i], _rh_1m[i] / 10, _rh_1m[i] % 10);
+			seq_printf(m, "%d_temp_1m    :\t\t-%d.%d C\n", _pins[i],
+				   (int)abs(_temps_1m[i] / 10),
+				   (int)abs(_temps_1m[i] % 10));
+		} else {
+			seq_printf(m, "%d_temp_1m    :\t\t%d.%d C\n", _pins[i],
+				   _temps_1m[i] / 10, _temps_1m[i] % 10);
+		}
+		seq_printf(m, "%d_RH_curr    :\t\t%d.%d %%\n", _pins[i],
+			   _sns[i].rh / 10, _sns[i].rh % 10);
+		seq_printf(m, "%d_RH_1m      :\t\t%d.%d %%\n", _pins[i],
+			   _rh_1m[i] / 10, _rh_1m[i] % 10);
 
-		local_time = (u32)(_timestamps[i] - (sys_tz.tz_minuteswest * 60));
+		local_time =
+		    (u32) (_timestamps[i] - (sys_tz.tz_minuteswest * 60));
 		time_to_tm(local_time, 0, &s_tm);
-		seq_printf(m, "%d_date       :\t\t%04ld-%02d-%02d %02d:%02d:%02d\n", _pins[i], s_tm.tm_year + 1900, s_tm.tm_mon + 1, s_tm.tm_mday, (s_tm.tm_hour + 2), s_tm.tm_min, s_tm.tm_sec);
-		seq_printf(m, "%d_timestamp  :\t\t%ld\n", _pins[i], _timestamps[i]);
-		seq_printf(m, "%d_QUAL       :\t\t%d/%d %d%c\n", _pins[i], _reads_ok[i], _reads_total[i], _reads_ok[i] * 100 / _reads_total[i], '\%');
+		seq_printf(m,
+			   "%d_date       :\t\t%04ld-%02d-%02d %02d:%02d:%02d\n",
+			   _pins[i], s_tm.tm_year + 1900, s_tm.tm_mon + 1,
+			   s_tm.tm_mday, (s_tm.tm_hour + 2), s_tm.tm_min,
+			   s_tm.tm_sec);
+		seq_printf(m, "%d_timestamp  :\t\t%ld\n", _pins[i],
+			   _timestamps[i]);
+		seq_printf(m, "%d_QUAL       :\t\t%d/%d %d%c\n", _pins[i],
+			   _reads_ok[i], _reads_total[i],
+			   _reads_ok[i] * 100 / _reads_total[i], '\%');
 
 		seq_printf(m, "\n");
 	}
 
-  return 0;
+	return 0;
 }
 
-static int proc_fs_open(struct inode *inode, struct  file *file) {
-  return single_open(file, proc_fs_show, NULL);
+static int proc_fs_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, proc_fs_show, NULL);
 }
 
 static const struct file_operations proc_fs_fops = {
-  .owner = THIS_MODULE,
-  .open = proc_fs_open,
-  .read = seq_read,
-  .llseek = seq_lseek,
-  .release = single_release,
+	.owner = THIS_MODULE,
+	.open = proc_fs_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
 #define CHECK_RET(r) do { \
@@ -164,7 +182,7 @@ static int start_read(void)
 	/*
 	 * Set pin high and wait for two milliseconds.
 	 */
- 	ret = gpio_direction_output(_pin, 1);
+	ret = gpio_direction_output(_pin, 1);
 	CHECK_RET(ret);
 
 	udelay(2000);
@@ -179,7 +197,7 @@ static int start_read(void)
 
 	_read_req = READ_START;
 
- 	ret = gpio_direction_input(_pin);
+	ret = gpio_direction_input(_pin);
 	CHECK_RET(ret);
 
 	return 0;
@@ -190,7 +208,8 @@ static int do_read_data(struct st_inf *s)
 	unsigned char cks = 0;
 	int max_u = 100;
 
- 	if (!wait_event_interruptible_timeout(_queue, (_read_req == READ_STOP), max_u)) {
+	if (!wait_event_interruptible_timeout
+	    (_queue, (_read_req == READ_STOP), max_u)) {
 		_read_req = READ_STOP;
 		return -1;
 	}
@@ -205,16 +224,19 @@ static int do_read_data(struct st_inf *s)
 		return -1;
 	}
 
-	s->rh = (int) (int16_t)(((uint16_t) _data[0] << 8) | (uint16_t) _data [1]);
+	s->rh =
+	    (int)(int16_t) (((uint16_t) _data[0] << 8) | (uint16_t) _data[1]);
 
 	if (_data[2] & 0x80) {
 		_data[2] = _data[2] & 0x7f;
-		s->t  = -1 * ( (int) (((uint16_t) _data[2] << 8) | (uint16_t) _data [3]) );
+		s->t =
+		    -1 *
+		    ((int)(((uint16_t) _data[2] << 8) | (uint16_t) _data[3]));
 	} else {
-		s->t  = (int) (((uint16_t) _data[2] << 8) | (uint16_t) _data [3]);
+		s->t = (int)(((uint16_t) _data[2] << 8) | (uint16_t) _data[3]);
 	}
 
-	if (s->rh > 1000 || s->rh < 0 || s->t > 800 || s->t < -400 ) {
+	if (s->rh > 1000 || s->rh < 0 || s->t > 800 || s->t < -400) {
 		return -1;
 	}
 
@@ -226,11 +248,11 @@ static int read_thread(void *data)
 	int local_delay = 0;
 	struct st_inf s;
 	static int pin_selector_counter = 0;
-        int selected_pin_index = 0;
+	int selected_pin_index = 0;
 	struct timeval time;
-        MEASUREMENT m;
+	MEASUREMENT m;
 
-        while (!kthread_should_stop()) {
+	while (!kthread_should_stop()) {
 
 		/*
 		 * Do not sleep the whole chunk, otherwise if
@@ -244,7 +266,7 @@ static int read_thread(void *data)
 		}
 
 		pin_selector_counter++;
-                selected_pin_index = pin_selector_counter % ARRAY_SIZE(_pins);
+		selected_pin_index = pin_selector_counter % ARRAY_SIZE(_pins);
 
 		_pin = _pins[selected_pin_index];
 
@@ -252,53 +274,43 @@ static int read_thread(void *data)
 
 		_reads_total[selected_pin_index]++;
 
-		if (start_read() != 0)
-                {
+		if (start_read() != 0) {
 			local_delay = SHORT_DELAY;
 			continue;
 		}
 
-		if (do_read_data(&s) != 0)
-		{
-			local_delay = SHORT_DELAY; /* Ignore this reading */
-		}
-		else
-                {
-			if (_reads_ok[selected_pin_index] == 0)
-			{
+		if (do_read_data(&s) != 0) {
+			local_delay = SHORT_DELAY;	/* Ignore this reading */
+		} else {
+			if (_reads_ok[selected_pin_index] == 0) {
 				local_delay = SHORT_DELAY;
 				_sns[selected_pin_index] = s;
 				_sp[selected_pin_index] = s;
-				_reads_ok[selected_pin_index]++ ;
-			}
-			else
-                        {
-				if ((s.t - _sp[selected_pin_index].t > 50) ||  /* 5 degrees difference */
-				    (s.t - _sp[selected_pin_index].t < -50) ||
-				    (s.rh - _sp[selected_pin_index].rh > 100) || /* or 10 RH difference */
-				    (s.rh - _sp[selected_pin_index].rh < -100))
-				{
+				_reads_ok[selected_pin_index]++;
+			} else {
+				if ((s.t - _sp[selected_pin_index].t > 50) ||	/* 5 degrees difference */
+				    (s.t - _sp[selected_pin_index].t < -50) || (s.rh - _sp[selected_pin_index].rh > 100) ||	/* or 10 RH difference */
+				    (s.rh - _sp[selected_pin_index].rh < -100)) {
 					/* Ignore this reading */
 					local_delay = SHORT_DELAY;
-				}
-                                else
-				{
+				} else {
 					_sns[selected_pin_index] = s;
 					_sp[selected_pin_index] = s;
 					_reads_ok[selected_pin_index]++;
 					do_gettimeofday(&time);
-					_timestamps[selected_pin_index] = time.tv_sec;
+					_timestamps[selected_pin_index] =
+					    time.tv_sec;
 
-                                        m.pin_index = selected_pin_index;
-                                        m.temp = s.t;
-                                        m.rh = s.rh;
-                                        m.timestamp = time.tv_sec;
-                                        stats_update(m);
+					m.pin_index = selected_pin_index;
+					m.temp = s.t;
+					m.rh = s.rh;
+					m.timestamp = time.tv_sec;
+					stats_update(m);
 				}
 			}
 		}
-        }
-        return 0;
+	}
+	return 0;
 }
 
 static int __init multiple_am2301_init(void)
@@ -307,7 +319,7 @@ static int __init multiple_am2301_init(void)
 
 	printk(KERN_INFO "Init multi-am2301\n");
 
-        stats_init(_temps_1m, _rh_1m, ARRAY_SIZE(_pins));
+	stats_init(_temps_1m, _rh_1m, ARRAY_SIZE(_pins));
 
 	init_waitqueue_head(&_queue);
 
@@ -317,19 +329,23 @@ static int __init multiple_am2301_init(void)
 		ret = gpio_request_one(_pins[i], GPIOF_OUT_INIT_HIGH, "AM2301");
 
 		if (ret != 0) {
-			printk(KERN_ERR "multi-am2301: Unable to request GPIO%d, err: %d\n", _pins[i], ret);
+			printk(KERN_ERR
+			       "multi-am2301: Unable to request GPIO%d, err: %d\n",
+			       _pins[i], ret);
 			return ret;
 		}
 
-		_irqs[i] =  gpio_to_irq(_pins[i]);
+		_irqs[i] = gpio_to_irq(_pins[i]);
 		if (_irqs[i] < 0) {
-			printk(KERN_ERR "multi-am2301: Unable to create IRQ for GPIO%d\n", _pins[i]);
+			printk(KERN_ERR
+			       "multi-am2301: Unable to create IRQ for GPIO%d\n",
+			       _pins[i]);
 			goto _cleanup_1;
 
 		}
 
-	        ret = request_irq(_irqs[i], read_isr,
-			  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+		ret = request_irq(_irqs[i], read_isr,
+				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
 				  "read_isr", NULL);
 	}
 
@@ -346,15 +362,15 @@ static int __init multiple_am2301_init(void)
 
 	return 0;
 
-_cleanup_2:
-	for (i=0; i < ARRAY_SIZE(_irqs); i++) {
+ _cleanup_2:
+	for (i = 0; i < ARRAY_SIZE(_irqs); i++) {
 		if (_irqs[i] >= 0) {
 			free_irq(_irqs[i], NULL);
 		}
 	}
 
-_cleanup_1:
-	for (i=0; i < ARRAY_SIZE(_pins); i++) {
+ _cleanup_1:
+	for (i = 0; i < ARRAY_SIZE(_pins); i++) {
 		gpio_free(_pins[i]);
 	}
 
@@ -365,17 +381,17 @@ static void __exit multiple_am2301_exit(void)
 {
 	int i;
 	if (ts) {
-                kthread_stop(ts);
-        }
+		kthread_stop(ts);
+	}
 
-	for (i=0; i < ARRAY_SIZE(_irqs); i++) {
+	for (i = 0; i < ARRAY_SIZE(_irqs); i++) {
 		if (_irqs[i] >= 0) {
 			free_irq(_irqs[i], NULL);
 		}
 	}
 
-	for (i=0; i < ARRAY_SIZE(_pins); i++) {
-	 	(void) gpio_direction_output(_pins[i], 1);
+	for (i = 0; i < ARRAY_SIZE(_pins); i++) {
+		(void)gpio_direction_output(_pins[i], 1);
 		gpio_free(_pins[i]);
 	}
 
@@ -390,4 +406,3 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Constantin Petra");
 MODULE_AUTHOR("Marcin Pilaczynski");
 MODULE_DESCRIPTION("multi AM2301 driver");
-
