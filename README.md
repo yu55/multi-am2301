@@ -21,7 +21,7 @@ Kernel module sits inside `module` directory. Example commandline script which l
 ## Installation
 * clone this repository
 * `cd module`
-* in source file `multi-am2301.c` find `static int _pins[] = {23, 24, 25};` array initialization and correct GPIO logical pin numbers according to your needs (don't use board physical pin numbers!)
+* in source file `decoder.c` find `static int _pins[] = {23, 24, 25};` array initialization and correct GPIO logical pin numbers according to your needs (don't use board physical pin numbers!)
 * please check `/lib/modules/VERSION/build` directory in `Makefile` against your OS and correct if needed. Note: you need kernel headers present in your system to be able to build kernel modules. You may want to check project [rpi-source](https://github.com/notro/rpi-source)
 * execute `make`
 * `sudo cp multi-am2301.ko /lib/modules/{VERSION}/kernel/drivers/`
