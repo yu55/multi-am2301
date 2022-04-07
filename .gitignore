@@ -53,6 +53,7 @@ REVISION
 *.symvers
 *.order
 *.ko
+*.mod
 .tmp_versions
 *.mod.c
 
