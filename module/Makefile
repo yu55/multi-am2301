@@ -2,10 +2,10 @@ MOD=multi-am2301
 
 obj-m := $(MOD).o
 
-$(MOD)-objs := decoder.o stats.o
+$(MOD)-objs := stats.o decoder.o
 
 all:
-	ARCH=arm CROSS_COMPILE=${CCPREFIX} $(MAKE) -C /lib/modules/4.4.26+/build M=$(PWD) modules
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:
-	ARCH=arm CROSS_COMPILE=${CCPREFIX} $(MAKE) -C /lib/modules/4.4.26+/build M=$(PWD) clean
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean

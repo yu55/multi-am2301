@@ -6,7 +6,7 @@
 #define FIFO_SIZE 64
 static DECLARE_KFIFO(fifo_1m, MEASUREMENT, FIFO_SIZE);
 
-void evict_outdated_in_fifo_1m(time_t);
+void evict_outdated_in_fifo_1m(time64_t);
 void calculate_stats_1m(void);
 
 static int *temps_1m;
@@ -30,7 +30,7 @@ void stats_update(MEASUREMENT measurement)
 	calculate_stats_1m();
 }
 
-void evict_outdated_in_fifo_1m(time_t current_time)
+void evict_outdated_in_fifo_1m(time64_t current_time)
 {
 	bool continue_eviction = true;
 	MEASUREMENT m;
