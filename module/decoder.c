@@ -6,6 +6,7 @@
 #include <linux/delay.h>
 #include <linux/semaphore.h>
 #include <linux/ktime.h>
+#include <linux/timekeeping.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/time.h>
@@ -28,7 +29,7 @@ struct st_inf {
 #define SHORT_DELAY 1
 #define DEFAULT_DELAY 2
 
-static int _pins[] = { 23, 24, 25, 8, 7 };
+static int _pins[] = { 5, 6, 12 };
 
 static int _irqs[ARRAY_SIZE(_pins)];
 static int _reads_ok[ARRAY_SIZE(_pins)];
@@ -37,7 +38,7 @@ static struct st_inf _sp[ARRAY_SIZE(_pins)];
 static struct st_inf _sns[ARRAY_SIZE(_pins)];
 static int _temps_1m[ARRAY_SIZE(_pins)];
 static int _rh_1m[ARRAY_SIZE(_pins)];
-static time_t _timestamps[ARRAY_SIZE(_pins)];
+static time64_t _timestamps[ARRAY_SIZE(_pins)];
 
 static int _pin = -1;
 static int _read_delay = DEFAULT_DELAY;	/* in seconds */
@@ -46,7 +47,7 @@ static struct task_struct *ts = NULL;
 static wait_queue_head_t _queue;
 static ktime_t _old;
 static volatile int _ulen;
-static unsigned char _data[5];
+static unsigned char _xdata[5];
 
 static int proc_fs_show(struct seq_file *m, void *v)
 {
@@ -78,13 +79,13 @@ static int proc_fs_show(struct seq_file *m, void *v)
 
 		local_time =
 		    (u32) (_timestamps[i] - (sys_tz.tz_minuteswest * 60));
-		time_to_tm(local_time, 0, &s_tm);
+		time64_to_tm(local_time, 0, &s_tm);
 		seq_printf(m,
 			   "%d_date       :\t\t%04ld-%02d-%02d %02d:%02d:%02d\n",
 			   _pins[i], s_tm.tm_year + 1900, s_tm.tm_mon + 1,
 			   s_tm.tm_mday, (s_tm.tm_hour + 2), s_tm.tm_min,
 			   s_tm.tm_sec);
-		seq_printf(m, "%d_timestamp  :\t\t%ld\n", _pins[i],
+		seq_printf(m, "%d_timestamp  :\t\t%lld\n", _pins[i],
 			   _timestamps[i]);
 		seq_printf(m, "%d_QUAL       :\t\t%d/%d %d%c\n", _pins[i],
 			   _reads_ok[i], _reads_total[i],
@@ -101,12 +102,12 @@ static int proc_fs_open(struct inode *inode, struct file *file)
 	return single_open(file, proc_fs_show, NULL);
 }
 
-static const struct file_operations proc_fs_fops = {
-	.owner = THIS_MODULE,
-	.open = proc_fs_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops proc_fs_fops = {
+//	.proc_owner = THIS_MODULE,
+	.proc_open = proc_fs_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 #define CHECK_RET(r) do { \
@@ -141,7 +142,7 @@ static irqreturn_t read_isr(int irq, void *data)
 			_read_req = READ_BIT_HIGH;
 			bit_count = 7;
 			char_count = 0;
-			memset(_data, 0, sizeof(_data));
+			memset(_xdata, 0, sizeof(_xdata));
 		}
 		break;
 	case READ_BIT_HIGH:
@@ -153,7 +154,7 @@ static irqreturn_t read_isr(int irq, void *data)
 		if (gpio_get_value(_pin) == 0) {
 			_ulen = ktime_us_delta(now, _old);
 			if (_ulen > 40) {
-				_data[char_count] |= (1 << bit_count);
+				_xdata[char_count] |= (1 << bit_count);
 			}
 			if (--bit_count < 0) {
 				char_count++;
@@ -219,21 +220,21 @@ static int do_read_data(struct st_inf *s)
 	 * Assuming that sometimes one bit is lost and, if the values are low enough,
 	 * the checksum is identical.
 	 */
-	cks = _data[0] + _data[1] + _data[2] + _data[3];
-	if (cks != _data[4]) {
+	cks = _xdata[0] + _xdata[1] + _xdata[2] + _xdata[3];
+	if (cks != _xdata[4]) {
 		return -1;
 	}
 
 	s->rh =
-	    (int)(int16_t) (((uint16_t) _data[0] << 8) | (uint16_t) _data[1]);
+	    (int)(int16_t) (((uint16_t) _xdata[0] << 8) | (uint16_t) _xdata[1]);
 
-	if (_data[2] & 0x80) {
-		_data[2] = _data[2] & 0x7f;
+	if (_xdata[2] & 0x80) {
+		_xdata[2] = _xdata[2] & 0x7f;
 		s->t =
 		    -1 *
-		    ((int)(((uint16_t) _data[2] << 8) | (uint16_t) _data[3]));
+		    ((int)(((uint16_t) _xdata[2] << 8) | (uint16_t) _xdata[3]));
 	} else {
-		s->t = (int)(((uint16_t) _data[2] << 8) | (uint16_t) _data[3]);
+		s->t = (int)(((uint16_t) _xdata[2] << 8) | (uint16_t) _xdata[3]);
 	}
 
 	if (s->rh > 1000 || s->rh < 0 || s->t > 800 || s->t < -400) {
@@ -249,7 +250,7 @@ static int read_thread(void *data)
 	struct st_inf s;
 	static int pin_selector_counter = 0;
 	int selected_pin_index = 0;
-	struct timeval time;
+	struct timespec64 time;
 	MEASUREMENT m;
 
 	while (!kthread_should_stop()) {
@@ -297,7 +298,7 @@ static int read_thread(void *data)
 					_sns[selected_pin_index] = s;
 					_sp[selected_pin_index] = s;
 					_reads_ok[selected_pin_index]++;
-					do_gettimeofday(&time);
+					ktime_get_real_ts64(&time);
 					_timestamps[selected_pin_index] =
 					    time.tv_sec;
 
